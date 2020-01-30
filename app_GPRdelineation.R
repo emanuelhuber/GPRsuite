@@ -159,7 +159,7 @@ server <- function(input, output) {
     if(!is.null(xplt$v)){
       plot(xplt$v)
     }else{
-      plot(0,0)
+      plot(0,0, type = "n")
     }
     # plot(0, 0, type='l')
     if(length(rv$m$x[-1] > 2)){
