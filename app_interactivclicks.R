@@ -1,15 +1,9 @@
 
-
-#Sorted it. Based on the help of a previous post: avoid double refresh of plot in shiny
-
-
-
-# Sorted it. Based on the help of a previous post: avoid double refresh of plot in shiny
-
+if(!require("shiny")) install.packages("shiny")
 library(shiny)
+
+
 ui <- basicPage(
-  #actionButton("edit","edit"),
-  # Input: Select separator ----
   radioButtons("edit", "Edit",
                choices = c(Draw = "draw",
                            Delete = "delete",
@@ -28,29 +22,14 @@ ui <- basicPage(
 
 server <- function(input, output) {
   output$value <- renderPrint({ input$edit })
-   # rv <- list()
-  # rv[["m"]] <- data.frame(x = as.numeric(), y = as.numeric())
-  # 
-  # rv <- reactiveValues(m = data.frame(x = 0, y = 0))
-  # 
-  # vals <- reactiveValues(
-  #   keeprows = rep(TRUE, nrow(rv$m))
-  # )
   
   click_saved <- reactiveValues(singleclick = NULL)
-  # brush_saved <- reactiveValues(brushedPoints(rv$m, xvar = "x", yvar = "y", input$plot_brush)
-  #brush_saved <- reactiveValues(singlebrush = NULL)
-  # output$click_info <- renderPrint({
-  #   # Because it's a ggplot2, we don't need to supply xvar or yvar; if this
-  #   # were a base graphics plot, we'd need those.
-  #   nearPoints(rv$m, input$plot1click, addDist = TRUE)
-  # })
   
   observeEvent(eventExpr = input$plot_click, 
      handlerExpr = { 
        click_saved$singleclick <- input$plot_click
        if (input$edit == "draw"){
-        print(click_saved$singleclick$x)
+        # print(click_saved$singleclick$x)
          xy <- data.frame(click_saved$singleclick$x,
                  click_saved$singleclick$y)
          names(xy) <- c("x", "y")
@@ -98,19 +77,8 @@ server <- function(input, output) {
   })
   
   
-  # Toggle points that are clicked
- # observeEvent(input$plot_click, {
-  #  res <- nearPoints(mtcars, input$plot_click, allRows = TRUE)
-  #  
-  #  vals$keeprows <- xor(vals$keeprows, res$selected_)
-  #})
-  
   rv <- reactiveValues(m = data.frame(x = numeric(), y = numeric()),
                        rmrows =c())
-  
-  # vals <- reactiveValues(
-  #   keeprows = rep(TRUE, nrow(rv$m))
-  # )
   
   output$plot1 <- renderPlot({
     plot(0, 0, type='l')
@@ -128,23 +96,13 @@ server <- function(input, output) {
   })
   
   output$info <- renderText({
-    paste0(unlist(click_saved$singleclick))
+    paste0( unlist(click_saved$singleclick))
   })
   
   # output$click_info <- renderText({
   #   paste0(unlist(click_saved$singleclick))
   # })
-
-  
-  
-  
-  # Toggle points that are brushed, when button is clicked
-  #observeEvent(input$exclude_toggle, {
-  #  res <- brushedPoints(mtcars, input$plot_brush, allRows = TRUE)
-  #  
-  #  vals$keeprows <- xor(vals$keeprows, res$selected_)
-  #})
-  
+ 
   observeEvent(eventExpr = input$edit, handlerExpr = {
     # if (input$edit > 0) {
     #   rv$m <- rbind(rv$m,unlist(click_saved$singleclick))

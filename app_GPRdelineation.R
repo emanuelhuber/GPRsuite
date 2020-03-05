@@ -1,13 +1,13 @@
 
+if(!require("devtools")) install.packages("devtools")
 
-#Sorted it. Based on the help of a previous post: avoid double refresh of plot in shiny
-
-
-
-# Sorted it. Based on the help of a previous post: avoid double refresh of plot in shiny
-
-library(shiny)
+devtools::install_github("emanuelhuber/RGPR")
 library(RGPR)
+
+if(!require("shiny")) install.packages("shiny")
+library(shiny)
+
+
 
 ui <- basicPage(
   #actionButton("edit","edit"),
@@ -25,8 +25,7 @@ ui <- basicPage(
              click = "plot_click", 
              brush = brushOpts(id = "plot_brush")
              ),
-  downloadButton("downloadData", "Download points ("),
-  
+  downloadButton("downloadData", "Download points "),
   verbatimTextOutput("info"),
   # verbatimTextOutput("click_info"),
   tableOutput('table')
@@ -35,23 +34,8 @@ ui <- basicPage(
 
 server <- function(input, output) {
   output$value <- renderPrint({ input$edit })
-   # rv <- list()
-  # rv[["m"]] <- data.frame(x = as.numeric(), y = as.numeric())
-  # 
-  # rv <- reactiveValues(m = data.frame(x = 0, y = 0))
-  # 
-  # vals <- reactiveValues(
-  #   keeprows = rep(TRUE, nrow(rv$m))
-  # )
   
   click_saved <- reactiveValues(singleclick = NULL)
-  # brush_saved <- reactiveValues(brushedPoints(rv$m, xvar = "x", yvar = "y", input$plot_brush)
-  #brush_saved <- reactiveValues(singlebrush = NULL)
-  # output$click_info <- renderPrint({
-  #   # Because it's a ggplot2, we don't need to supply xvar or yvar; if this
-  #   # were a base graphics plot, we'd need those.
-  #   nearPoints(rv$m, input$plot1click, addDist = TRUE)
-  # })
   
   observeEvent(eventExpr = input$plot_click, 
      handlerExpr = { 
@@ -73,10 +57,6 @@ server <- function(input, output) {
        rv$rmrows <- rep(FALSE, nrow(rv$m))
     }
   )
-  
-  # output$brush_info <- renderPrint({
-  #   brushedPoints(mtcars2, input$plot1_brush)
-  # })
   
   brush_saved <- reactiveValues(singlebrush = NULL)
   observeEvent(eventExpr = input$plot_brush,
@@ -104,43 +84,18 @@ server <- function(input, output) {
     }
   })
   
-  
-  # Toggle points that are clicked
- # observeEvent(input$plot_click, {
-  #  res <- nearPoints(mtcars, input$plot_click, allRows = TRUE)
-  #  
-  #  vals$keeprows <- xor(vals$keeprows, res$selected_)
-  #})
-  
   rv <- reactiveValues(m = data.frame(x = numeric(), y = numeric()),
                        rmrows =c())
-  
-  # vals <- reactiveValues(
-  #   keeprows = rep(TRUE, nrow(rv$m))
-  # )
   
   xplt <- reactiveValues(v = NULL)
   
   observeEvent(input$file1, {
     req(input$file1)
-    print(input$file1$datapath)
+    # print(input$file1$datapath)
     # when reading semicolon separated files,
     # having a comma separator causes `read.csv` to error
     tryCatch(
       {
-        # TWO OPTIONS FOR GPR DATA FORMAT WITH ASCII HEADER FILES:
-        # 1. Uploat .dt1 and then ask for file .hd
-        # 2. Multiple upload:
-        #     - sort the file
-        #     - read
-        # if(length(input$file1$datapath) > 1){
-        #   dsn <- input$file1$datapath[1]
-        #   dsn2 <- input$file1$datapath[2]
-        # }else{
-        #   dsn <- input$file1$datapath[1]
-        #   dsn2 <- NULL
-        # }
-        print(input$file1$datapath)
         xplt$v <- RGPR::readGPR(dsn = input$file1$datapath)
       },
       error = function(e) {
@@ -149,8 +104,6 @@ server <- function(input, output) {
       }
     )
   })
-  
-  # x <- frenkeLine00
   
   output$plot1 <- renderPlot({
     # input$file1 will be NULL initially. After the user selects
@@ -161,7 +114,6 @@ server <- function(input, output) {
     }else{
       plot(0,0, type = "n")
     }
-    # plot(0, 0, type='l')
     if(length(rv$m$x[-1] > 2)){
       lines(rv$m$x, rv$m$y)
     }
@@ -211,16 +163,6 @@ server <- function(input, output) {
   # output$click_info <- renderText({
   #   paste0(unlist(click_saved$singleclick))
   # })
-
-  
-  
-  
-  # Toggle points that are brushed, when button is clicked
-  #observeEvent(input$exclude_toggle, {
-  #  res <- brushedPoints(mtcars, input$plot_brush, allRows = TRUE)
-  #  
-  #  vals$keeprows <- xor(vals$keeprows, res$selected_)
-  #})
   
   observeEvent(eventExpr = input$edit, handlerExpr = {
     # if (input$edit > 0) {

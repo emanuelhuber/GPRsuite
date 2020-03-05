@@ -1,5 +1,7 @@
 # RGPRshiny
 
+**in construction!**
+
 Shiny apps for the R-package [RGPR](https://github.com/emanuelhuber/RGPR)
 
 ## Generic: interactively set and delete points

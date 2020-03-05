@@ -1,60 +1,38 @@
 
 if(!require("devtools")) install.packages("devtools")
-devtools::install_local("/media/huber/Seagate1TB/UNIBAS/PROJECTS/RGPR/CODE/RGPR", force = TRUE)
-# devtools::install_local("/mnt/data/huber/Documents/WORKNEW/RGPR_PROJECT/RGPR",
-#                         force = TRUE)
-# devtools::install_local("/mnt/data/huber/Documents/WORKNEW/GPR_Project/RGPR", force = TRUE)
 
-# devtools::install_github("emanuelhuber/RGPR")
+devtools::install_github("emanuelhuber/RGPR")
 library(RGPR)
 
+if(!require("shiny")) install.packages("shiny")
 library(shiny)
-# library(RGPR)
 
 options(shiny.maxRequestSize = 30*1024^2)
-# 
-# setwd("/mnt/data/huber/Documents/WORKNEW/GPR_Project/DEVELOPMENT/FILE_FORMAT/ImpulseRadar")
-# 
-# readGPR(dsn  = "CO_examples/CO example_0001_0.iprb",
-#         dsn2 = "CO_examples/CO example_0001_0.iprh")
-
 
 # Define UI for data upload app ----
 ui <- fluidPage(
-  
   # App title ----
-  titlePanel("Uploading Files"),
-  
+  titlePanel("Uploading GPR Files"),
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
-    
     # Sidebar panel for inputs ----
     sidebarPanel(
-      
       # Input: Select a file ----
       fileInput("file1", "Choose GPR File",
-                multiple = TRUE #,
-                # accept = c("text/csv",
-                           # "text/comma-separated-values,text/plain",
-                           # ".csv")
+                multiple = TRUE
       )
     ),
-    
     # Main panel for displaying outputs ----
     mainPanel(
-      
       # Output: Data file ----
       # tableOutput("contents")
-      plotOutput("plot1",width="800px",height="400px")
-      
+      plotOutput("plot1",width = "800px", height = "400px") 
     )
-    
   )
 )
 
 # Define server logic to read selected file ----
 server <- function(input, output) {
-  
   # output$contents <- renderTable({
     output$plot1 <- renderPlot({
     
@@ -63,24 +41,9 @@ server <- function(input, output) {
     # or all rows if selected, will be shown.
     
     req(input$file1)
-      print(input$file1$datapath)
-    # when reading semicolon separated files,
-    # having a comma separator causes `read.csv` to error
+    # print(input$file1$datapath)
     tryCatch(
       {
-        # TWO OPTIONS FOR GPR DATA FORMAT WITH ASCII HEADER FILES:
-        # 1. Uploat .dt1 and then ask for file .hd
-        # 2. Multiple upload:
-        #     - sort the file
-        #     - read
-        # if(length(input$file1$datapath) > 1){
-        #   dsn <- input$file1$datapath[1]
-        #   dsn2 <- input$file1$datapath[2]
-        # }else{
-        #   dsn <- input$file1$datapath[1]
-        #   dsn2 <- NULL
-        # }
-        print(input$file1$datapath)
         x <- RGPR::readGPR(dsn = input$file1$datapath)
       },
       error = function(e) {
@@ -88,17 +51,7 @@ server <- function(input, output) {
         stop(safeError(e))
       }
     )
-      plot(x)
-      
-      
-    # 
-    # if(input$disp == "head") {
-    #   return(head(df))
-    # }
-    # else {
-    #   return(df)
-    # }
-    
+      plot(x)    
   })
   
 }
