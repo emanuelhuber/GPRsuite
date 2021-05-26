@@ -1,4 +1,4 @@
-# RGPRshiny
+# GPRsuite
 
 **in construction!**
 
